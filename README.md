@@ -8,7 +8,7 @@ Print result in format:
 
 ## Project structure
 Project consists of the three modules.
-1. ```main``` module read a file and sends chunks of the 1000 lines to the matcher asynchronous
+1. ```main``` module reads a file and sends chunks of the 1000 lines to the matcher asynchronous
 2. ```matcher``` - gets a text string as input and searches for matches of a given set of strings. 
 The result is a map from a word to its location(s) in the text 
 3. ```aggregator``` - combine the results and prints the results.
@@ -17,7 +17,9 @@ The result is a map from a word to its location(s) in the text
 ## Usage
 
 Navigate to the ```Main.class``` of the ```com.bigId.fileReader``` package of the ```main``` module
+
 Check file ```big.txt``` with large text exists in the project root
+
 Run ```main``` method
 
 ## Assumptions

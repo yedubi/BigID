@@ -1,6 +1,7 @@
 package com.bigId.fileReader;
 
 import com.bigId.matcher.TextMatcher;
+import com.bigId.matcher.impl.NameMatcher;
 
 import java.io.BufferedReader;
 import java.util.*;
@@ -10,12 +11,11 @@ import java.util.concurrent.ExecutorService;
 public class FileChunkReader {
     public static final int CHUNK_SIZE = 1000;
     private final String fileName;
-    private final TextMatcher matcher;
+    private final TextMatcher nameMatcher;
 
     public FileChunkReader(String fileName) {
         this.fileName = fileName;
-        this.matcher = new TextMatcher();
-
+        this.nameMatcher = new NameMatcher();
     }
 
     public ArrayList<CompletableFuture<Map<String, List<Map<String, Integer>>>>> readFileByChunksAndMatchWordsLocationsAsync
@@ -50,20 +50,21 @@ public class FileChunkReader {
         return completableFutures;
     }
 
-    private int getChunkLineOffset(int chunk) {
-        var firstLineOffset = 1;
-        return firstLineOffset + (chunk * CHUNK_SIZE);
-    }
-
     private CompletableFuture<Map<String, List<Map<String, Integer>>>> getCompletableFutureChunkMatchingResultMap
             (ExecutorService threadPool, Set<String> wordsToMatch, StringBuilder sb, int chunkId) {
         var chunkLineOffset = getChunkLineOffset(chunkId);
         return CompletableFuture
-                .supplyAsync(() -> matcher.matchWordsLocations(wordsToMatch, sb.toString(), chunkLineOffset), threadPool)
+                .supplyAsync(() -> nameMatcher.matchLocations(wordsToMatch, sb.toString(), chunkLineOffset), threadPool)
                 .exceptionally(ex -> {
                     System.out.println("Something went wrong : " + ex.getMessage());
                     return null;
                 });
     }
+
+    private int getChunkLineOffset(int chunk) {
+        var firstLineOffset = 1;
+        return firstLineOffset + (chunk * CHUNK_SIZE);
+    }
+
 
 }

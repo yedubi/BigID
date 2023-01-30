@@ -39,12 +39,12 @@ public class Main {
                 .collect(Collectors.toList());
 
         threadPool.shutdownNow();
-        threadPool.awaitTermination(1, TimeUnit.MINUTES);
+        threadPool.awaitTermination(1, TimeUnit.SECONDS);
 
         // aggregate results from all chunks and print
         var result = Aggregator.aggregateMatches(wordsLocations);
 
-        long stop = System.nanoTime();
+        var stop = System.nanoTime();
         System.out.println("Time: " + (stop - start) / 1000000.0 + " msec");
 
     }
