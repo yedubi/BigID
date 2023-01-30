@@ -1,0 +1,6 @@
+rootProject.name = 'BigId2'
+include 'main'
+include 'main'
+include 'matcher'
+include 'aggregator'
+

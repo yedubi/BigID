@@ -1,0 +1,10 @@
+# Project exclude paths
+/.gradle/
+/aggregator/build/
+/aggregator/build/classes/java/main/
+/aggregator/build/classes/java/test/
+/build/
+/main/build/
+/main/build/classes/java/main/
+/matcher/build/
+/matcher/build/classes/java/main/
