@@ -15,10 +15,9 @@ The result is a map from a word to its location(s) in the text
 
 
 ## Usage
+Check file ```big.txt``` with large text is in the project root
 
-Navigate to the ```Main.class``` of the ```com.bigId.fileReader``` package of the ```main``` module
-
-Check file ```big.txt``` with large text exists in the project root
+Navigate to the ```Main.java``` of the ```com.bigId.fileReader``` package of the ```main``` module
 
 Run ```main``` method
 

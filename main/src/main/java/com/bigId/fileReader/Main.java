@@ -1,7 +1,6 @@
 package com.bigId.fileReader;
 
 import com.bigId.aggregator.Aggregator;
-import com.bigId.fileReader.FileChunkReader;
 
 import java.util.Arrays;
 import java.util.HashSet;
