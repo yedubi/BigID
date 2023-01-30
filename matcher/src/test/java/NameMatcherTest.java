@@ -21,29 +21,29 @@ class NameMatcherTest {
 
         var mapArthur1 = new HashMap<String, Integer>();
         mapArthur1.put("lineOffset", 2);
-        mapArthur1.put("charOffset", 7);
+        mapArthur1.put("charOffset", 8);
         var mapArthur2 = new HashMap<String, Integer>();
         mapArthur2.put("lineOffset", 2);
-        mapArthur2.put("charOffset", 20);
+        mapArthur2.put("charOffset", 22);
         var mapArthur3 = new HashMap<String, Integer>();
         mapArthur3.put("lineOffset", 3);
-        mapArthur3.put("charOffset", 26);
+        mapArthur3.put("charOffset", 27);
         listArthur.add(mapArthur1);
         listArthur.add(mapArthur2);
         listArthur.add(mapArthur3);
 
         var mapConan1 = new HashMap<String, Integer>();
         mapConan1.put("lineOffset", 2);
-        mapConan1.put("charOffset", 14);
+        mapConan1.put("charOffset", 15);
         var mapConan2 = new HashMap<String, Integer>();
         mapConan2.put("lineOffset", 3);
-        mapConan2.put("charOffset", 33);
+        mapConan2.put("charOffset", 34);
         listConan.add(mapConan1);
         listConan.add(mapConan2);
 
         var mapDoyle1 = new HashMap<String, Integer>();
         mapDoyle1.put("lineOffset", 3);
-        mapDoyle1.put("charOffset", 39);
+        mapDoyle1.put("charOffset", 41);
         listDoyle.add(mapDoyle1);
 
         var expectedResult = new HashMap<>();

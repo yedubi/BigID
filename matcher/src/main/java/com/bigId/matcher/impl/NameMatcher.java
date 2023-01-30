@@ -10,7 +10,7 @@ import java.util.stream.IntStream;
 
 public class NameMatcher implements TextMatcher {
 
-    private final static String NAME_REGEX = "[^A-Za-z]*%s([^A-Za-z]|$)";
+    private final static String NAME_REGEX = "%s([^A-Za-z]|$)";
     public static final String LINE_OFFSET_KEY = "lineOffset";
     public static final String CHAR_OFFSET_KEY = "charOffset";
 
