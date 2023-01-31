@@ -39,7 +39,6 @@ public class Main {
                 .collect(Collectors.toList());
 
         threadPool.shutdownNow();
-        threadPool.awaitTermination(1, TimeUnit.SECONDS);
 
         // aggregate results from all chunks and print
         var result = Aggregator.aggregateMatches(wordsLocations);
