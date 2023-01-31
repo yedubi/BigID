@@ -1,6 +1,7 @@
 package com.bigId.fileReader;
 
 import com.bigId.aggregator.Aggregator;
+import com.bigId.matcher.impl.NameMatcher;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -28,7 +29,7 @@ public class Main {
 
         //read file and send chunks asynchronous for matching
         var completableFuturesWordsLocations =
-                new FileChunkReader(fileName)
+                new FileChunkReader(fileName, new NameMatcher())
                         .readFileByChunksAndMatchWordsLocationsAsync(CHUNK_SIZE, threadPool, wordsToMatch);
 
         //collect to list of maps for each chunk when all completableFutures complete

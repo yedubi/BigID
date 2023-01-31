@@ -13,9 +13,9 @@ public class FileChunkReader {
     private final String fileName;
     private final TextMatcher nameMatcher;
 
-    public FileChunkReader(String fileName) {
+    public FileChunkReader(String fileName, TextMatcher nameMatcher) {
         this.fileName = fileName;
-        this.nameMatcher = new NameMatcher();
+        this.nameMatcher = nameMatcher;
     }
 
     public ArrayList<CompletableFuture<Map<String, List<Map<String, Integer>>>>> readFileByChunksAndMatchWordsLocationsAsync
