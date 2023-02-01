@@ -40,7 +40,6 @@ public class Main {
                 .collect(Collectors.toList());
 
         threadPool.shutdownNow();
-        threadPool.awaitTermination(1, TimeUnit.SECONDS);
 
         var result = aggregator.getResult();
 
