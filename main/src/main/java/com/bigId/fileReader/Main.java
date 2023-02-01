@@ -5,16 +5,11 @@ import com.bigId.matcher.impl.NameMatcher;
 
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 public class Main {
 
-    public static final int FIXED_THREADS_POOL_SIZE = 4;
-
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args)  {
 
         var start = System.nanoTime();
 
@@ -24,27 +19,13 @@ public class Main {
 
         var wordsToMatch = getWordsSet(words);
 
-        var threadPool = Executors.newFixedThreadPool(FIXED_THREADS_POOL_SIZE);
-
         var aggregator = new AggregatorImpl();
         var matcher = new NameMatcher();
         var fileReader = new FileChunkReader(fileName, matcher, aggregator);
+
         //read file and send chunks asynchronous for matching
-        var completableFuturesWordsLocations =
-                fileReader.readFileByChunksAndMatchWordsLocationsAsync(threadPool, wordsToMatch);
-
-        //collect to list of maps for each chunk when all completableFutures complete
-        completableFuturesWordsLocations
-                .stream()
-                .map(CompletableFuture::join)
-                .collect(Collectors.toList());
-
-        threadPool.shutdownNow();
-
-        var result = aggregator.getResult();
-
-        // aggregate results from all chunks and print
-        //var result = Aggregator.aggregateMatches(wordsLocations);
+        fileReader.readFileByChunksAndMatchWordsLocationsAsync(wordsToMatch);
+        var result = fileReader.getResult();
 
         var stop = System.nanoTime();
         System.out.println("Time: " + (stop - start) / 1000000.0 + " msec");

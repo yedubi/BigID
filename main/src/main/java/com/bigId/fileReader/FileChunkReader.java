@@ -8,9 +8,12 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
 
 public class FileChunkReader {
     public static final int CHUNK_SIZE = 1000;
+    public static final int FIXED_THREADS_POOL_SIZE = 4;
     private final String fileName;
     private final TextMatcher nameMatcher;
     private final Aggregator aggregator;
@@ -22,8 +25,29 @@ public class FileChunkReader {
         this.fileName = fileName;
         this.nameMatcher = nameMatcher;
         this.aggregator = aggregator;
-
     }
+
+
+    public void readFileByChunksAndMatchWordsLocationsAsync(Set<String> wordsToMatch) {
+
+        var threadPool = Executors.newFixedThreadPool(FIXED_THREADS_POOL_SIZE);
+
+        var completableFuturesWordsLocations =
+                readFileByChunksAndMatchWordsLocationsAsync(threadPool, wordsToMatch);
+
+        //collect to list of maps for each chunk when all completableFutures complete
+        completableFuturesWordsLocations
+                .stream()
+                .map(CompletableFuture::join)
+                .collect(Collectors.toList());
+
+        threadPool.shutdownNow();
+    }
+
+    public Map<String, List<Map<String, Integer>>> getResult() {
+        return aggregator.getResult();
+    }
+
 
     public ArrayList<CompletableFuture<Map<String, List<Map<String, Integer>>>>> readFileByChunksAndMatchWordsLocationsAsync
             (ExecutorService threadPool, Set<String> wordsToMatch) {
