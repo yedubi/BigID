@@ -13,13 +13,10 @@ import java.util.stream.Collectors;
 
 public class FileChunkReader {
     public static final int CHUNK_SIZE = 1000;
-    public static final int FIXED_THREADS_POOL_SIZE = 4;
+    public static final int FIXED_THREADS_POOL_SIZE = 8;
     private final String fileName;
     private final TextMatcher nameMatcher;
     private final Aggregator aggregator;
-
-    private ConcurrentHashMap<String, List<Map<String, Integer>>> entries =
-            new ConcurrentHashMap<>();
 
     public FileChunkReader(String fileName, TextMatcher nameMatcher, Aggregator aggregator) {
         this.fileName = fileName;
