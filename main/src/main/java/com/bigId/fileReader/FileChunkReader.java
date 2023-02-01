@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 
 public class FileChunkReader {
     public static final int CHUNK_SIZE = 1000;
-    public static final int FIXED_THREADS_POOL_SIZE = 8;
+    public static final int FIXED_THREADS_POOL_SIZE = 4;
     private final String fileName;
     private final TextMatcher nameMatcher;
     private final Aggregator aggregator;
