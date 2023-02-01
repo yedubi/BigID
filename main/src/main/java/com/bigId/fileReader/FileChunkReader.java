@@ -1,25 +1,32 @@
 package com.bigId.fileReader;
 
+import com.bigId.aggregator.Aggregator;
 import com.bigId.matcher.TextMatcher;
-import com.bigId.matcher.impl.NameMatcher;
 
 import java.io.BufferedReader;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 
 public class FileChunkReader {
     public static final int CHUNK_SIZE = 1000;
     private final String fileName;
     private final TextMatcher nameMatcher;
+    private final Aggregator aggregator;
 
-    public FileChunkReader(String fileName, TextMatcher nameMatcher) {
+    private ConcurrentHashMap<String, List<Map<String, Integer>>> entries =
+            new ConcurrentHashMap<>();
+
+    public FileChunkReader(String fileName, TextMatcher nameMatcher, Aggregator aggregator) {
         this.fileName = fileName;
         this.nameMatcher = nameMatcher;
+        this.aggregator = aggregator;
+
     }
 
     public ArrayList<CompletableFuture<Map<String, List<Map<String, Integer>>>>> readFileByChunksAndMatchWordsLocationsAsync
-            (int chunkSize, ExecutorService threadPool, Set<String> wordsToMatch) {
+            (ExecutorService threadPool, Set<String> wordsToMatch) {
 
         var completableFutures = new ArrayList<CompletableFuture<Map<String, List<Map<String, Integer>>>>>();
 
@@ -32,7 +39,7 @@ public class FileChunkReader {
             while (Objects.nonNull(line = br.readLine())) {
                 chunkStringBuilder.append(line.isEmpty() ? System.lineSeparator() : line + System.lineSeparator());
                 lineCount++;
-                if (lineCount % chunkSize == 0) {
+                if (lineCount % CHUNK_SIZE == 0) {
                     var chunkLength = chunkStringBuilder.length();
                     var completableFuture = getCompletableFutureChunkMatchingResultMap(threadPool, wordsToMatch, chunkStringBuilder, chunkId);
                     completableFutures.add(completableFuture);
@@ -58,6 +65,9 @@ public class FileChunkReader {
                 .exceptionally(ex -> {
                     System.out.println("Something went wrong : " + ex.getMessage());
                     return null;
+                }).thenApplyAsync(map -> {
+                    aggregator.aggregate(map);
+                    return map;
                 });
     }
 

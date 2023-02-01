@@ -1,4 +1,4 @@
-import com.bigId.aggregator.Aggregator;
+import com.bigId.aggregator.impl.AggregatorImpl;
 import com.bigId.matcher.TextMatcher;
 
 module bigId.main {
@@ -6,6 +6,6 @@ module bigId.main {
     requires bigId.aggregator;
     requires bigId.matcher;
 
-    uses Aggregator;
+    uses AggregatorImpl;
     uses TextMatcher;
 }
