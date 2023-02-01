@@ -65,14 +65,16 @@ public class FileChunkReader {
                 lineCount++;
                 if (lineCount % CHUNK_SIZE == 0) {
                     var chunkLength = chunkStringBuilder.length();
-                    var completableFuture = getCompletableFutureChunkMatchingResultMap(threadPool, wordsToMatch, chunkStringBuilder, chunkId);
+                    var completableFuture =
+                            getCompletableFutureChunkMatchingResultMap(threadPool, wordsToMatch, chunkStringBuilder, chunkId);
                     completableFutures.add(completableFuture);
                     chunkId++;
                     chunkStringBuilder = new StringBuilder();
                 }
             }
             if (chunkStringBuilder.length() > 0) {
-                var completableFuture = getCompletableFutureChunkMatchingResultMap(threadPool, wordsToMatch, chunkStringBuilder, chunkId);
+                var completableFuture =
+                        getCompletableFutureChunkMatchingResultMap(threadPool, wordsToMatch, chunkStringBuilder, chunkId);
                 completableFutures.add(completableFuture);
             }
         } catch (Exception e) {
