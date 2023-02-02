@@ -23,27 +23,27 @@ public class FileChunkReader {
         var completableFutures = new ArrayList<CompletableFuture<Map<String, List<Map<String, Integer>>>>>();
 
         try (BufferedReader br = new BufferedReader(new java.io.FileReader(fileName))) {
-            var myStringArray = new String[CHUNK_SIZE];
+            var chunkStringArray = new String[CHUNK_SIZE];
             String line;
             var totalLineCount = 0;
             var chunkLineCount = 0;
             var chunkId = 0;
 
             while (Objects.nonNull(line = br.readLine())) {
-                myStringArray[chunkLineCount] = line.isEmpty() ? System.lineSeparator() : line + System.lineSeparator();
+                chunkStringArray[chunkLineCount] = line.isEmpty() ? System.lineSeparator() : line + System.lineSeparator();
                 totalLineCount++;
                 chunkLineCount++;
                 if (isChunkReadyForMatching(totalLineCount)) {
                     var completableFuture =
-                            getCompletableFutureChunkMatchingResultMap(threadPool, wordsToMatch, myStringArray, chunkId);
+                            getCompletableFutureChunkMatchingResultMap(threadPool, wordsToMatch, chunkStringArray, chunkId);
                     completableFutures.add(completableFuture);
                     chunkId++;
-                    myStringArray = new String[CHUNK_SIZE];
+                    chunkStringArray = new String[CHUNK_SIZE];
                     chunkLineCount = 0;
                 }
             }
             var completableFuture =
-                    getCompletableFutureChunkMatchingResultMap(threadPool, wordsToMatch, myStringArray, chunkId);
+                    getCompletableFutureChunkMatchingResultMap(threadPool, wordsToMatch, chunkStringArray, chunkId);
             completableFutures.add(completableFuture);
         } catch (Exception e) {
             e.printStackTrace();
