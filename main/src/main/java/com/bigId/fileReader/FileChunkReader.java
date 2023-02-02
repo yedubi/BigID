@@ -6,7 +6,6 @@ import com.bigId.matcher.TextMatcher;
 import java.io.BufferedReader;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
@@ -24,21 +23,23 @@ public class FileChunkReader {
         this.aggregator = aggregator;
     }
 
-
     public void readFileByChunksAndMatchWordsLocationsAsync(Set<String> wordsToMatch) {
+
 
         var threadPool = Executors.newFixedThreadPool(FIXED_THREADS_POOL_SIZE);
 
-        var completableFuturesWordsLocations =
-                readFileByChunksAndMatchWordsLocationsAsync(threadPool, wordsToMatch);
+        try {
+            var completableFuturesWordsLocations =
+                    readFileByChunksAndMatchWordsLocationsAsync(threadPool, wordsToMatch);
 
-        //collect to list of maps for each chunk when all completableFutures complete
-        completableFuturesWordsLocations
-                .stream()
-                .map(CompletableFuture::join)
-                .collect(Collectors.toList());
-
-        threadPool.shutdownNow();
+            //collect to list of maps for each chunk when all completableFutures complete
+            completableFuturesWordsLocations
+                    .stream()
+                    .map(CompletableFuture::join)
+                    .collect(Collectors.toList());
+        } finally {
+            threadPool.shutdownNow();
+        }
     }
 
     public Map<String, List<Map<String, Integer>>> getResult() {
@@ -88,7 +89,7 @@ public class FileChunkReader {
                 .exceptionally(ex -> {
                     System.out.println("Something went wrong : " + ex.getMessage());
                     return null;
-                }).thenApplyAsync(map -> {
+                }).thenApply(map -> {
                     aggregator.aggregate(map);
                     return map;
                 });
