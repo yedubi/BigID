@@ -14,14 +14,14 @@ public class NameMatcher implements TextMatcher {
     public static final String LINE_OFFSET_KEY = "lineOffset";
     public static final String CHAR_OFFSET_KEY = "charOffset";
 
-    public Map<String, List<Map<String, Integer>>> matchLocations(Set<String> names, String chunkText, int chunkLineOffset) {
-        var lines = chunkText.split("\n");
+    public Map<String, List<Map<String, Integer>>> matchLocations(Set<String> names, String[] chunkLines, int chunkLineOffset) {
         // iterate over each line and each name
-        return IntStream.range(0, lines.length)
+        return IntStream.range(0, chunkLines.length)
                 .boxed()
                 .flatMap(lineIdx -> names
                         .stream()
-                        .filter(name -> lines[lineIdx].contains(name)).map(name -> getWordLocationsMapping(chunkLineOffset, lines, lineIdx, name)))
+                        .filter(name -> isLineContainsText(name, chunkLines, lineIdx))
+                        .map(name -> getWordLocationsMapping(chunkLineOffset, chunkLines, lineIdx, name)))
                 .flatMap(Collection::stream)
                 .filter(Objects::nonNull)
                 .collect(Collectors.groupingBy(AbstractMap.SimpleEntry::getKey,
@@ -29,15 +29,27 @@ public class NameMatcher implements TextMatcher {
                                 Collectors.toList())));
     }
 
+    private boolean isLineContainsText(String name, String[] chunkLines, int idx) {
+        try {
+            return chunkLines[idx].contains(name);
+        } catch (NullPointerException ignore) {
+        }
+        return false;
+    }
+
     private List<AbstractMap.SimpleEntry<String, Map<String, Integer>>> getWordLocationsMapping(int chunkLineOffset, String[] lines, Integer lineIdx, String name) {
-        Matcher matcher = getMatcher(name, lines[lineIdx]);
         List<AbstractMap.SimpleEntry<String, Map<String, Integer>>> nameLocationsList = new ArrayList<>();
-        while (matcher.find()) {
-            Map<String, Integer> locationsMap = new HashMap<>();
-            locationsMap.put(LINE_OFFSET_KEY, lineIdx + chunkLineOffset);
-            locationsMap.put(CHAR_OFFSET_KEY, matcher.start() + 1);
-            var nameLocationsMap = new AbstractMap.SimpleEntry<>(name, locationsMap);
-            nameLocationsList.add(nameLocationsMap);
+        try {
+            Matcher matcher = getMatcher(name, lines[lineIdx]);
+            while (matcher.find()) {
+                Map<String, Integer> locationsMap = new HashMap<>();
+                locationsMap.put(LINE_OFFSET_KEY, lineIdx + chunkLineOffset);
+                locationsMap.put(CHAR_OFFSET_KEY, matcher.start() + 1);
+                var nameLocationsMap = new AbstractMap.SimpleEntry<>(name, locationsMap);
+                nameLocationsList.add(nameLocationsMap);
+            }
+        } catch (NullPointerException e) {
+            System.out.println("");
         }
         return nameLocationsList;
     }
