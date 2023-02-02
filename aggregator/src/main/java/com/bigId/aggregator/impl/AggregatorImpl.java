@@ -41,7 +41,7 @@ public class AggregatorImpl implements Aggregator {
                             return left;
                         }
                 ));
-//        aggregatedResult.forEach((key, value) -> System.out.println(key + "-->" + value));
+        aggregatedResult.forEach((key, value) -> System.out.println(key + "-->" + value));
         return aggregatedResult;
     }
 

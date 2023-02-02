@@ -30,7 +30,6 @@ public class FileChunkReader {
             var chunkId = 0;
 
             while (Objects.nonNull(line = br.readLine())) {
-
                 myStringArray[chunkLineCount] = line.isEmpty() ? System.lineSeparator() : line + System.lineSeparator();
                 totalLineCount++;
                 chunkLineCount++;
