@@ -43,7 +43,7 @@ public class FileChunkReader {
                     chunkStringBuilder = new StringBuilder();
                 }
             }
-            if (chunkStringBuilder.length() > 0) {
+            if (isLastChunkNotEmpty(chunkStringBuilder)) {
                 var completableFuture =
                         getCompletableFutureChunkMatchingResultMap(threadPool, wordsToMatch, chunkStringBuilder, chunkId);
                 completableFutures.add(completableFuture);
@@ -52,6 +52,10 @@ public class FileChunkReader {
             e.printStackTrace();
         }
         return completableFutures;
+    }
+
+    private boolean isLastChunkNotEmpty(StringBuilder chunkStringBuilder) {
+        return chunkStringBuilder.length() > 0;
     }
 
     private boolean isChunkReadyForMatching(int lineCount) {
