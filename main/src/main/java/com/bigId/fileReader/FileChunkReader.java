@@ -35,6 +35,7 @@ public class FileChunkReader {
             //collect to list of maps for each chunk when all completableFutures complete
             completableFuturesWordsLocations
                     .stream()
+                    .filter(Objects::nonNull)
                     .map(CompletableFuture::join)
                     .collect(Collectors.toList());
         } finally {
@@ -86,12 +87,12 @@ public class FileChunkReader {
         var chunkLineOffset = getChunkLineOffset(chunkId);
         return CompletableFuture
                 .supplyAsync(() -> nameMatcher.matchLocations(wordsToMatch, sb.toString(), chunkLineOffset), threadPool)
-                .exceptionally(ex -> {
-                    System.out.println("Something went wrong : " + ex.getMessage());
-                    return null;
-                }).thenApply(map -> {
+                .thenApply(map -> {
                     aggregator.aggregate(map);
                     return map;
+                }).exceptionally(ex -> {
+                    System.out.println("Something went wrong : " + ex.getMessage());
+                    return null;
                 });
     }
 
