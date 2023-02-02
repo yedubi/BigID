@@ -5,11 +5,16 @@ import com.bigId.matcher.impl.NameMatcher;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
+
 
 public class Main {
+    public static final int FIXED_THREADS_POOL_SIZE = 4;
 
     public static void main(String[] args)  {
+
 
         var start = System.nanoTime();
 
@@ -21,11 +26,21 @@ public class Main {
 
         var aggregator = new AggregatorImpl();
         var matcher = new NameMatcher();
-        var fileReader = new FileChunkReader(fileName, matcher, aggregator);
+        var fileReader = new FileChunkReader(fileName, matcher);
 
-        //read file and send chunks asynchronous for matching
-        fileReader.readFileByChunksAndMatchWordsLocationsAsync(wordsToMatch);
-        var result = fileReader.getResult();
+        var threadPool = Executors.newFixedThreadPool(FIXED_THREADS_POOL_SIZE);
+
+        try {
+            var completableFuturesWordsLocations =
+                    fileReader.readFileByChunksAndMatchWordsLocationsAsync(threadPool, wordsToMatch);
+            var chunksResultListMap = completableFuturesWordsLocations
+                    .stream()
+                    .map(CompletableFuture::join)
+                    .collect(Collectors.toList());
+            var result = aggregator.aggregateMatches(chunksResultListMap);
+        } finally {
+            threadPool.shutdownNow();
+        }
 
         var stop = System.nanoTime();
         System.out.println("Time: " + (stop - start) / 1000000.0 + " msec");

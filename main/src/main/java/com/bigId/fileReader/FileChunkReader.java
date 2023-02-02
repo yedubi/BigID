@@ -12,39 +12,12 @@ import java.util.stream.Collectors;
 
 public class FileChunkReader {
     public static final int CHUNK_SIZE = 1000;
-    public static final int FIXED_THREADS_POOL_SIZE = 4;
     private final String fileName;
     private final TextMatcher nameMatcher;
-    private final Aggregator aggregator;
 
-    public FileChunkReader(String fileName, TextMatcher nameMatcher, Aggregator aggregator) {
+    public FileChunkReader(String fileName, TextMatcher nameMatcher) {
         this.fileName = fileName;
         this.nameMatcher = nameMatcher;
-        this.aggregator = aggregator;
-    }
-
-    public void readFileByChunksAndMatchWordsLocationsAsync(Set<String> wordsToMatch) {
-
-
-        var threadPool = Executors.newFixedThreadPool(FIXED_THREADS_POOL_SIZE);
-
-        try {
-            var completableFuturesWordsLocations =
-                    readFileByChunksAndMatchWordsLocationsAsync(threadPool, wordsToMatch);
-
-            //collect to list of maps for each chunk when all completableFutures complete
-            completableFuturesWordsLocations
-                    .stream()
-                    .filter(Objects::nonNull)
-                    .map(CompletableFuture::join)
-                    .collect(Collectors.toList());
-        } finally {
-            threadPool.shutdownNow();
-        }
-    }
-
-    public Map<String, List<Map<String, Integer>>> getResult() {
-        return aggregator.getResult();
     }
 
 
@@ -62,8 +35,7 @@ public class FileChunkReader {
             while (Objects.nonNull(line = br.readLine())) {
                 chunkStringBuilder.append(line.isEmpty() ? System.lineSeparator() : line + System.lineSeparator());
                 lineCount++;
-                if (lineCount % CHUNK_SIZE == 0) {
-                    var chunkLength = chunkStringBuilder.length();
+                if (isChunkReadyForMatching(lineCount)) {
                     var completableFuture =
                             getCompletableFutureChunkMatchingResultMap(threadPool, wordsToMatch, chunkStringBuilder, chunkId);
                     completableFutures.add(completableFuture);
@@ -82,15 +54,16 @@ public class FileChunkReader {
         return completableFutures;
     }
 
+    private boolean isChunkReadyForMatching(int lineCount) {
+        return lineCount % CHUNK_SIZE == 0;
+    }
+
     private CompletableFuture<Map<String, List<Map<String, Integer>>>> getCompletableFutureChunkMatchingResultMap
             (ExecutorService threadPool, Set<String> wordsToMatch, StringBuilder sb, int chunkId) {
         var chunkLineOffset = getChunkLineOffset(chunkId);
         return CompletableFuture
                 .supplyAsync(() -> nameMatcher.matchLocations(wordsToMatch, sb.toString(), chunkLineOffset), threadPool)
-                .thenApply(map -> {
-                    aggregator.aggregate(map);
-                    return map;
-                }).exceptionally(ex -> {
+                .exceptionally(ex -> {
                     System.out.println("Something went wrong : " + ex.getMessage());
                     return null;
                 });
