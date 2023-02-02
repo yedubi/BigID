@@ -22,12 +22,13 @@ public class FileChunkReader {
 
         var completableFutures = new ArrayList<CompletableFuture<Map<String, List<Map<String, Integer>>>>>();
 
+        var chunkStringArray = new String[CHUNK_SIZE];
+        String line;
+        var totalLineCount = 0;
+        var chunkLineCount = 0;
+        var chunkId = 0;
+
         try (BufferedReader br = new BufferedReader(new java.io.FileReader(fileName))) {
-            var chunkStringArray = new String[CHUNK_SIZE];
-            String line;
-            var totalLineCount = 0;
-            var chunkLineCount = 0;
-            var chunkId = 0;
 
             while (Objects.nonNull(line = br.readLine())) {
                 chunkStringArray[chunkLineCount] = line.isEmpty() ? System.lineSeparator() : line + System.lineSeparator();
