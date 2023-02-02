@@ -38,7 +38,6 @@ public class Main {
                     .map(CompletableFuture::join)
                     .collect(Collectors.toList());
             var result = aggregator.aggregateMatches(chunksResultListMap);
-            System.out.println("");
         } finally {
             threadPool.shutdownNow();
         }
