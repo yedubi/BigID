@@ -23,8 +23,7 @@ public class FileChunkReader {
         var completableFutures = new ArrayList<CompletableFuture<Map<String, List<Map<String, Integer>>>>>();
 
         try (BufferedReader br = new BufferedReader(new java.io.FileReader(fileName))) {
-            var myStringArray = new String[1000];
-
+            var myStringArray = new String[CHUNK_SIZE];
             String line;
             var totalLineCount = 0;
             var chunkLineCount = 0;
