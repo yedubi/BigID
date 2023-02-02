@@ -1,14 +1,11 @@
 package com.bigId.fileReader;
 
-import com.bigId.aggregator.Aggregator;
 import com.bigId.matcher.TextMatcher;
 
 import java.io.BufferedReader;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.stream.Collectors;
 
 public class FileChunkReader {
     public static final int CHUNK_SIZE = 1000;
@@ -20,42 +17,40 @@ public class FileChunkReader {
         this.nameMatcher = nameMatcher;
     }
 
-
     public ArrayList<CompletableFuture<Map<String, List<Map<String, Integer>>>>> readFileByChunksAndMatchWordsLocationsAsync
             (ExecutorService threadPool, Set<String> wordsToMatch) {
 
         var completableFutures = new ArrayList<CompletableFuture<Map<String, List<Map<String, Integer>>>>>();
 
         try (BufferedReader br = new BufferedReader(new java.io.FileReader(fileName))) {
-            var chunkStringBuilder = new StringBuilder();
+            var myStringArray = new String[1000];
+
             String line;
-            var lineCount = 0;
+            var totalLineCount = 0;
+            var chunkLineCount = 0;
             var chunkId = 0;
 
             while (Objects.nonNull(line = br.readLine())) {
-                chunkStringBuilder.append(line.isEmpty() ? System.lineSeparator() : line + System.lineSeparator());
-                lineCount++;
-                if (isChunkReadyForMatching(lineCount)) {
+
+                myStringArray[chunkLineCount] = line.isEmpty() ? System.lineSeparator() : line + System.lineSeparator();
+                totalLineCount++;
+                chunkLineCount++;
+                if (isChunkReadyForMatching(totalLineCount)) {
                     var completableFuture =
-                            getCompletableFutureChunkMatchingResultMap(threadPool, wordsToMatch, chunkStringBuilder, chunkId);
+                            getCompletableFutureChunkMatchingResultMap(threadPool, wordsToMatch, myStringArray, chunkId);
                     completableFutures.add(completableFuture);
                     chunkId++;
-                    chunkStringBuilder = new StringBuilder();
+                    myStringArray = new String[CHUNK_SIZE];
+                    chunkLineCount = 0;
                 }
             }
-            if (isLastChunkNotEmpty(chunkStringBuilder)) {
-                var completableFuture =
-                        getCompletableFutureChunkMatchingResultMap(threadPool, wordsToMatch, chunkStringBuilder, chunkId);
-                completableFutures.add(completableFuture);
-            }
+            var completableFuture =
+                    getCompletableFutureChunkMatchingResultMap(threadPool, wordsToMatch, myStringArray, chunkId);
+            completableFutures.add(completableFuture);
         } catch (Exception e) {
             e.printStackTrace();
         }
         return completableFutures;
-    }
-
-    private boolean isLastChunkNotEmpty(StringBuilder chunkStringBuilder) {
-        return chunkStringBuilder.length() > 0;
     }
 
     private boolean isChunkReadyForMatching(int lineCount) {
@@ -63,10 +58,10 @@ public class FileChunkReader {
     }
 
     private CompletableFuture<Map<String, List<Map<String, Integer>>>> getCompletableFutureChunkMatchingResultMap
-            (ExecutorService threadPool, Set<String> wordsToMatch, StringBuilder sb, int chunkId) {
+            (ExecutorService threadPool, Set<String> wordsToMatch, String[] chunkLines, int chunkId) {
         var chunkLineOffset = getChunkLineOffset(chunkId);
         return CompletableFuture
-                .supplyAsync(() -> nameMatcher.matchLocations(wordsToMatch, sb.toString(), chunkLineOffset), threadPool)
+                .supplyAsync(() -> nameMatcher.matchLocations(wordsToMatch, chunkLines, chunkLineOffset), threadPool)
                 .exceptionally(ex -> {
                     System.out.println("Something went wrong : " + ex.getMessage());
                     return null;
@@ -77,6 +72,5 @@ public class FileChunkReader {
         var firstLineOffset = 1;
         return firstLineOffset + (chunk * CHUNK_SIZE);
     }
-
 
 }

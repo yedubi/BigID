@@ -21,7 +21,7 @@ public class Main {
 
             var fileName = "big.txt";
 
-            var words = "James,James,John,Robert,Michael,William,David,Richard,Charles,Joseph,Thomas,Christopher,Daniel,Paul,Mark,Donald,George,Kenneth,Steven,Edward,Brian,Ronald,Anthony,Kevin,Jason,Matthew,Gary,Timothy,Jose,Larry,Jeffrey, Frank,Scott,Eric,Stephen,Andrew,Raymond,Gregory,Joshua,Jerry,Dennis,Walter,Patrick,Peter,Harold,Douglas,Henry,Carl,Arthur,Ryan,Roger";
+            var words = "Yevhenii,James,John,Robert,Michael,William,David,Richard,Charles,Joseph,Thomas,Christopher,Daniel,Paul,Mark,Donald,George,Kenneth,Steven,Edward,Brian,Ronald,Anthony,Kevin,Jason,Matthew,Gary,Timothy,Jose,Larry,Jeffrey,Frank,Scott,Eric,Stephen,Andrew,Raymond,Gregory,Joshua,Jerry,Dennis,Walter,Patrick,Peter,Harold,Douglas,Henry,Carl,Arthur,Ryan,Roger";
 
             var wordsToMatch = getWordsSet(words);
 
@@ -39,6 +39,7 @@ public class Main {
                         .map(CompletableFuture::join)
                         .collect(Collectors.toList());
                 var result = aggregator.aggregateMatches(chunksResultListMap);
+                System.out.println("");
             } finally {
                 threadPool.shutdownNow();
             }
