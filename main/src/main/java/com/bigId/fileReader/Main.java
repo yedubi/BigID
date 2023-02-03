@@ -20,7 +20,7 @@ public class Main {
 
         var fileName = "big.txt";
 
-        var words = "James,John,Robert,Michael,William,David,Richard,Charles,Joseph,Thomas,Christopher,Daniel,Paul,Mark,Donald,George,Kenneth,Steven,Edward,Brian,Ronald,Anthony,Kevin,Jason,Matthew,Gary,Timothy,Jose,Larry,Jeffrey,Frank,Scott,Eric,Stephen,Andrew,Raymond,Gregory,Joshua,Jerry,Dennis,Walter,Patrick,Peter,Harold,Douglas,Henry,Carl,Arthur,Ryan,Roger";
+        var words = "Yevhenii,James,John,Robert,Michael,William,David,Richard,Charles,Joseph,Thomas,Christopher,Daniel,Paul,Mark,Donald,George,Kenneth,Steven,Edward,Brian,Ronald,Anthony,Kevin,Jason,Matthew,Gary,Timothy,Jose,Larry,Jeffrey,Frank,Scott,Eric,Stephen,Andrew,Raymond,Gregory,Joshua,Jerry,Dennis,Walter,Patrick,Peter,Harold,Douglas,Henry,Carl,Arthur,Ryan,Roger";
 
         var wordsToMatch = getWordsSet(words);
 
@@ -30,7 +30,9 @@ public class Main {
 
 
         var threadPool = Executors.newFixedThreadPool(FIXED_THREADS_POOL_SIZE);
+
         try {
+
             var completableFuturesWordsLocations =
                     fileReader.readFileByChunksAndMatchWordsLocationsAsync(threadPool, wordsToMatch);
             var chunksResultListMap = completableFuturesWordsLocations
@@ -38,6 +40,7 @@ public class Main {
                     .map(CompletableFuture::join)
                     .collect(Collectors.toList());
             var result = aggregator.aggregateMatches(chunksResultListMap);
+
         } finally {
             threadPool.shutdownNow();
         }

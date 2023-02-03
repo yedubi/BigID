@@ -22,34 +22,39 @@ public class FileChunkReader {
 
         var completableFutures = new ArrayList<CompletableFuture<Map<String, List<Map<String, Integer>>>>>();
 
-        var chunkStringArray = new String[CHUNK_SIZE];
+        var chunkLinesList = new ArrayList<String>();
+
         String line;
         var totalLineCount = 0;
-        var chunkLineCount = 0;
         var chunkId = 0;
 
-        try (BufferedReader br = new BufferedReader(new java.io.FileReader(fileName))) {
+        try (var bufferedReader = new BufferedReader(new java.io.FileReader(fileName))) {
 
-            while (Objects.nonNull(line = br.readLine())) {
-                chunkStringArray[chunkLineCount] = line.isEmpty() ? System.lineSeparator() : line + System.lineSeparator();
+            while (Objects.nonNull(line = bufferedReader.readLine())) {
+                chunkLinesList.add(getLineString(line));
                 totalLineCount++;
-                chunkLineCount++;
+
                 if (isChunkReadyForMatching(totalLineCount)) {
                     var completableFuture =
-                            getCompletableFutureChunkMatchingResultMap(threadPool, wordsToMatch, chunkStringArray, chunkId);
+                            getCompletableFutureChunkMatchingResultMap(threadPool, wordsToMatch, chunkLinesList, chunkId);
                     completableFutures.add(completableFuture);
                     chunkId++;
-                    chunkStringArray = new String[CHUNK_SIZE];
-                    chunkLineCount = 0;
+                    chunkLinesList = new ArrayList<>();
                 }
             }
+
             var completableFuture =
-                    getCompletableFutureChunkMatchingResultMap(threadPool, wordsToMatch, chunkStringArray, chunkId);
+                    getCompletableFutureChunkMatchingResultMap(threadPool, wordsToMatch, chunkLinesList, chunkId);
             completableFutures.add(completableFuture);
+
         } catch (Exception e) {
             e.printStackTrace();
         }
         return completableFutures;
+    }
+
+    private String getLineString(String line) {
+        return line.isEmpty() ? System.lineSeparator() : line + System.lineSeparator();
     }
 
     private boolean isChunkReadyForMatching(int lineCount) {
@@ -57,7 +62,7 @@ public class FileChunkReader {
     }
 
     private CompletableFuture<Map<String, List<Map<String, Integer>>>> getCompletableFutureChunkMatchingResultMap
-            (ExecutorService threadPool, Set<String> wordsToMatch, String[] chunkLines, int chunkId) {
+            (ExecutorService threadPool, Set<String> wordsToMatch, ArrayList<String> chunkLines, int chunkId) {
         var chunkLineOffset = getChunkLineOffset(chunkId);
         return CompletableFuture
                 .supplyAsync(() -> nameMatcher.matchLocations(wordsToMatch, chunkLines, chunkLineOffset), threadPool)

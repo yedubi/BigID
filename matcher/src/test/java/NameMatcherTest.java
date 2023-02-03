@@ -10,13 +10,13 @@ class NameMatcherTest {
 
     @Test
     void testLocationMatcher() {
-        Set<String> names = new HashSet<>(Arrays.asList("Conan,Arthur,Doyle".split(",")));
-        String[] lines = new String[5];
-        lines[0] = "The Project Gutenberg EBook of The Adventures of Sherlock Holmes";
-        lines[1] = System.lineSeparator();
-        lines[2] = "by Sir Arthur Conan[ Arthur";
-        lines[3] = System.lineSeparator();
-        lines[4] = "(#15 in our series by Sir Arthur Conan  Doyle)";
+        var names = new HashSet<>(Arrays.asList("Conan,Arthur,Doyle".split(",")));
+        var lines = new ArrayList<String>();
+        lines.add("The Project Gutenberg EBook of The Adventures of Sherlock Holmes");
+        lines.add(System.lineSeparator());
+        lines.add("by Sir Arthur Conan[ Arthur");
+        lines.add(System.lineSeparator());
+        lines.add("(#15 in our series by Sir Arthur Conan  Doyle)");
 
         var listArthur = new ArrayList<Map<String, Integer>>();
         var listConan = new ArrayList<Map<String, Integer>>();
