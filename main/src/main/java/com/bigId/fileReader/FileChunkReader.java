@@ -28,7 +28,8 @@ public class FileChunkReader {
         var totalLineCount = 0;
         var chunkId = 0;
 
-        try (var bufferedReader = new BufferedReader(new java.io.FileReader(fileName))) {
+        try (var fileReader = new java.io.FileReader(fileName);
+             var bufferedReader = new BufferedReader(fileReader)) {
 
             while (Objects.nonNull(line = bufferedReader.readLine())) {
                 chunkLinesList.add(getLineString(line));
