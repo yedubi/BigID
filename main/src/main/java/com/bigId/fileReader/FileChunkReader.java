@@ -32,7 +32,7 @@ public class FileChunkReader {
              var bufferedReader = new BufferedReader(fileReader)) {
 
             while (Objects.nonNull(line = bufferedReader.readLine())) {
-                chunkLinesList.add(getLineString(line));
+                chunkLinesList.add(line);
                 totalLineCount++;
 
                 if (isChunkReadyForMatching(totalLineCount)) {
@@ -52,10 +52,6 @@ public class FileChunkReader {
             e.printStackTrace();
         }
         return completableFutures;
-    }
-
-    private String getLineString(String line) {
-        return line.isEmpty() ? System.lineSeparator() : line + System.lineSeparator();
     }
 
     private boolean isChunkReadyForMatching(int lineCount) {
