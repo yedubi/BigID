@@ -22,24 +22,26 @@ public class FileChunkReader {
 
         var completableFutures = new ArrayList<CompletableFuture<Map<String, List<Map<String, Integer>>>>>();
 
-        var chunkLinesList = new ArrayList<String>();
+        var chunkLinesList = new String[CHUNK_SIZE];
 
         String line;
         var totalLineCount = 0;
         var chunkId = 0;
+        var chunkLineId = 0;
 
         try (var bufferedReader = new BufferedReader(new java.io.FileReader(fileName))) {
 
             while (Objects.nonNull(line = bufferedReader.readLine())) {
-                chunkLinesList.add(getLineString(line));
+                chunkLinesList[chunkLineId] = getLineString(line);
                 totalLineCount++;
-
+                chunkLineId++;
                 if (isChunkReadyForMatching(totalLineCount)) {
                     var completableFuture =
                             getCompletableFutureChunkMatchingResultMap(threadPool, wordsToMatch, chunkLinesList, chunkId);
                     completableFutures.add(completableFuture);
                     chunkId++;
-                    chunkLinesList = new ArrayList<>();
+                    chunkLinesList = new String[CHUNK_SIZE];
+                    chunkLineId = 0;
                 }
             }
 
@@ -62,7 +64,7 @@ public class FileChunkReader {
     }
 
     private CompletableFuture<Map<String, List<Map<String, Integer>>>> getCompletableFutureChunkMatchingResultMap
-            (ExecutorService threadPool, Set<String> wordsToMatch, ArrayList<String> chunkLines, int chunkId) {
+            (ExecutorService threadPool, Set<String> wordsToMatch, String[] chunkLines, int chunkId) {
         var chunkLineOffset = getChunkLineOffset(chunkId);
         return CompletableFuture
                 .supplyAsync(() -> nameMatcher.matchLocations(wordsToMatch, chunkLines, chunkLineOffset), threadPool)

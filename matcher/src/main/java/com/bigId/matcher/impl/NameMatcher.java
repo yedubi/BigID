@@ -14,13 +14,19 @@ public class NameMatcher implements TextMatcher {
     public static final String LINE_OFFSET_KEY = "lineOffset";
     public static final String CHAR_OFFSET_KEY = "charOffset";
 
-    public Map<String, List<Map<String, Integer>>> matchLocations(Set<String> names, ArrayList<String> chunkLines, int chunkLineOffset) {
+    public Map<String, List<Map<String, Integer>>> matchLocations(Set<String> names, String[] chunkLines, int chunkLineOffset) {
         // iterate over each line and each name
-        return IntStream.range(0, chunkLines.size())
+        return IntStream.range(0, chunkLines.length)
                 .boxed()
                 .flatMap(lineIdx -> names
                         .stream()
-                        .filter(name -> chunkLines.get(lineIdx).contains(name))
+                        .filter(name -> {
+                            try {
+                                return chunkLines[lineIdx].contains(name);
+                            } catch (Exception e) {
+                                return false;
+                            }
+                        })
                         .map(name -> getWordLocationsMapping(chunkLineOffset, chunkLines, lineIdx, name)))
                 .flatMap(Collection::stream)
                 .filter(Objects::nonNull)
@@ -30,10 +36,11 @@ public class NameMatcher implements TextMatcher {
     }
 
 
-    private List<AbstractMap.SimpleEntry<String, Map<String, Integer>>> getWordLocationsMapping(int chunkLineOffset, ArrayList<String> lines, Integer lineIdx, String name) {
+    private List<AbstractMap.SimpleEntry<String, Map<String, Integer>>> getWordLocationsMapping(
+            int chunkLineOffset, String[] lines, Integer lineIdx, String name) {
         List<AbstractMap.SimpleEntry<String, Map<String, Integer>>> nameLocationsList = new ArrayList<>();
         try {
-            Matcher matcher = getMatcher(name, lines.get(lineIdx));
+            Matcher matcher = getMatcher(name, lines[lineIdx]);
             while (matcher.find()) {
                 Map<String, Integer> locationsMap = new HashMap<>();
                 locationsMap.put(LINE_OFFSET_KEY, lineIdx + chunkLineOffset);

@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 public class Main {
     public static final int FIXED_THREADS_POOL_SIZE = 4;
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
 
 
         var start = System.nanoTime();
@@ -28,7 +28,6 @@ public class Main {
         var matcher = new NameMatcher();
         var fileReader = new FileChunkReader(fileName, matcher);
 
-
         var threadPool = Executors.newFixedThreadPool(FIXED_THREADS_POOL_SIZE);
 
         try {
@@ -40,7 +39,6 @@ public class Main {
                     .map(CompletableFuture::join)
                     .collect(Collectors.toList());
             var result = aggregator.aggregateMatches(chunksResultListMap);
-
         } finally {
             threadPool.shutdownNow();
         }
