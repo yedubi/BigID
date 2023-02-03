@@ -13,23 +13,6 @@ public class AggregatorImpl implements Aggregator {
 
     private final ConcurrentHashMap<String, List<Map<String, Integer>>> entries = new ConcurrentHashMap<>();
 
-    public void aggregate(Map<String, List<Map<String, Integer>>> map) {
-        if (Objects.nonNull(map)) {
-            map.forEach((key, value) -> entries.compute(key, (k, v) -> {
-                List<Map<String, Integer>> vals = v;
-                if (vals == null)
-                    vals = new ArrayList<>();
-                vals.addAll(value);
-                return vals;
-            }));
-        }
-    }
-
-    public Map<String, List<Map<String, Integer>>> getResult() {
-        entries.forEach((key, value) -> System.out.println(key + "-->" + value));
-        return entries;
-    }
-
     public Map<String, List<Map<String, Integer>>> aggregateMatches(List<Map<String, List<Map<String, Integer>>>> wordsLocationsMatching) {
         Map<String, List<Map<String, Integer>>> aggregatedResult = wordsLocationsMatching
                 .stream()

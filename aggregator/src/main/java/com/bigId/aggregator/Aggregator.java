@@ -4,6 +4,5 @@ import java.util.List;
 import java.util.Map;
 
 public interface Aggregator {
-    void aggregate(Map<String, List<Map<String, Integer>>> map);
-    Map<String, List<Map<String, Integer>>> getResult();
+    Map<String, List<Map<String, Integer>>> aggregateMatches(List<Map<String, List<Map<String, Integer>>>> wordsLocationsMatching);
 }
