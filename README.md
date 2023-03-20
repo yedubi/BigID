@@ -1,5 +1,5 @@
-## Expectations
-To receive detailed feedback from reviewers how it could be improved to match BigID company standards if any issues with performance or memory.
+## BigID interview coding round
+Wasn't accepted with reason "not good enough memory consumption" withourt detailed feedback.
 
 ## Overview
 Simple java program for finding specific strings in a large text. 
