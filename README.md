@@ -1,5 +1,5 @@
 ## BigID interview coding round
-Wasn't accepted with reason "not good enough memory consumption" withourt detailed feedback.
+Wasn't accepted with reason "not good enough memory consumption" without detailed feedback. So maybe not worth to spend time.
 
 ## Overview
 Simple java program for finding specific strings in a large text. 
