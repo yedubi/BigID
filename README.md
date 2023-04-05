@@ -1,3 +1,7 @@
+## Intro
+Rejected by reviewers wih reason "not good enought..", "memory consumption.."
+
+
 ## Overview
 Simple java program for finding specific strings in a large text. 
 
